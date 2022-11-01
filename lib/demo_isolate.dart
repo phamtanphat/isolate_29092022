@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'dart:isolate';
 import 'package:flutter/material.dart';
 class DemoIsolatePage extends StatefulWidget {
 
@@ -8,15 +8,22 @@ class DemoIsolatePage extends StatefulWidget {
 
 class _DemoIsolatePageState extends State<DemoIsolatePage> {
 
+  // Future getCount() {
+  //   return compute(doSomething, 0);
+  // }
+
   Future getCount() {
-    return compute(doSomething, 0);
+    ReceivePort port = ReceivePort();
+    Isolate.spawn(doSomething, port.sendPort);
+    return port.first;
   }
 
-  int doSomething(int value) {
-      for (int i = 0; i < 10000000000; i++) {
-        value += i;
-      }
-      return value;
+  static void doSomething(SendPort sendPort) {
+    int count = 0;
+    for (int i = 0; i < 100000; i++) {
+      count += i;
+    }
+    sendPort.send(count);
   }
 
   @override
