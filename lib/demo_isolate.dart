@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 class DemoIsolatePage extends StatefulWidget {
 
@@ -7,12 +8,15 @@ class DemoIsolatePage extends StatefulWidget {
 
 class _DemoIsolatePageState extends State<DemoIsolatePage> {
 
-  void doSomething() {
-      int count = 0;
+  Future getCount() {
+    return compute(doSomething, 0);
+  }
+
+  int doSomething(int value) {
       for (int i = 0; i < 10000000000; i++) {
-        count += i;
+        value += i;
       }
-      print(count);
+      return value;
   }
 
   @override
@@ -30,7 +34,8 @@ class _DemoIsolatePageState extends State<DemoIsolatePage> {
             CircularProgressIndicator(),
             ElevatedButton(
                 onPressed: (){
-                  doSomething();
+                  getCount()
+                      .then((value) => print(value));
                 },
                 child: Text("Start Isolate")
             )
